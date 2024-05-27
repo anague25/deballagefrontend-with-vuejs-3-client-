@@ -9,6 +9,7 @@ import Main from '@/components/dashbord/main/Main.vue';
 
 import attributeRoute from './attributeRoute';
 import categoryRoute from './categoryRoute';
+import cityRoute from './cityRoute';
 
 
 const router = createRouter({
@@ -43,6 +44,7 @@ const router = createRouter({
             },
            ...attributeRoute,
            ...categoryRoute,
+           ...cityRoute,
           ]
         }
       ]

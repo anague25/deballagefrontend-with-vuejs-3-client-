@@ -95,7 +95,7 @@ const actions = {
     try {
         const response = await categoriesService.updateCategory(category);
         commit('updateCategory', response.data);
-        console.log('kkkkkkkkkkkkkkkkkkkkkkkkkk');
+        // console.log('kkkkkkkkkkkkkkkkkkkkkkkkkk');
 
         // Mettre à jour la liste des attributs pour refléter les changements
         await dispatch('fetchCategories', { page: state.currentPage, search: '' });
