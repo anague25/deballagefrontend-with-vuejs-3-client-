@@ -426,7 +426,7 @@
                                         <rect x="14" y="14" width="7" height="7"></rect>
                                         <rect x="3" y="14" width="7" height="7"></rect>
                                     </svg></div>
-                                Products
+                              Manage Products
                                 <div class="sidenav-collapse-arrow"><svg class="svg-inline--fa fa-angle-down"
                                         aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-down"
                                         role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"
@@ -438,7 +438,7 @@
                             </a>
                             <div class="collapse" id="collapsePages" data-bs-parent="#accordionSidenav">
                                 <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPagesMenu">
-                                    <!-- Nested Sidenav Accordion (Pages -> Account)-->
+                                    <!-- ATTRIBUTES-->
                                     <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
                                         data-bs-target="#pagesCollapseAccount" aria-expanded="false"
                                         aria-controls="pagesCollapseAccount">
@@ -463,7 +463,37 @@
 
                                         </nav>
                                     </div>
-                                    <!-- Nested Sidenav Accordion (Pages -> Authentication)-->
+
+
+                                     <!-- PROPERTIES-->
+                                     <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
+                                        data-bs-target="#pagesCollapsePRO" aria-expanded="false"
+                                        aria-controls="pagesCollapseAccount">
+                                        Properties
+                                        <div class="sidenav-collapse-arrow"><svg class="svg-inline--fa fa-angle-down"
+                                                aria-hidden="true" focusable="false" data-prefix="fas"
+                                                data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 384 512" data-fa-i2svg="">
+                                                <path fill="currentColor"
+                                                    d="M192 384c-8.188 0-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L192 306.8l137.4-137.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-160 160C208.4 380.9 200.2 384 192 384z">
+                                                </path>
+                                            </svg><!-- <i class="fas fa-angle-down"></i> Font Awesome fontawesome.com -->
+                                        </div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapsePRO"
+                                        data-bs-parent="#accordionSidenavPagesMenu">
+                                        <nav class="sidenav-menu-nested nav">
+                                            <RouterLink class="nav-link" to="/dashboard/properties">All Properties
+                                            </RouterLink>
+                                            <RouterLink class="nav-link" to="/dashboard/properties/create">Add Properties
+                                            </RouterLink>
+
+                                        </nav>
+                                    </div>
+
+
+
+                                    <!-- CATEGORIES-->
                                     <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
                                         data-bs-target="#pagesCollapseAuth" aria-expanded="false"
                                         aria-controls="pagesCollapseAuth">
@@ -487,9 +517,41 @@
                                             </RouterLink>
                                         </nav>
                                     </div>
+
+                                    <!-- Products-->
+                                    <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
+                                        data-bs-target="#pagesCollapseproduct" aria-expanded="false"
+                                        aria-controls="pagesCollapseAuth">
+                                        Products
+                                        <div class="sidenav-collapse-arrow"><svg class="svg-inline--fa fa-angle-down"
+                                                aria-hidden="true" focusable="false" data-prefix="fas"
+                                                data-icon="angle-down" role="img" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 384 512" data-fa-i2svg="">
+                                                <path fill="currentColor"
+                                                    d="M192 384c-8.188 0-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L192 306.8l137.4-137.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-160 160C208.4 380.9 200.2 384 192 384z">
+                                                </path>
+                                            </svg><!-- <i class="fas fa-angle-down"></i> Font Awesome fontawesome.com -->
+                                        </div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseproduct"
+                                        data-bs-parent="#accordionSidenavPagesMenu">
+                                        <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPagesAuth">
+                                            <RouterLink class="nav-link" to="/dashboard/products">All Products
+                                            </RouterLink>
+                                            <RouterLink class="nav-link" to="/dashboard/products/create">Add Product
+                                            </RouterLink>
+                                        </nav>
+                                    </div>
+
+
+
+
+
+
                                     <!-- Nested Sidenav Accordion (Pages -> Error)-->
                                 </nav>
                             </div>
+
 
 
                             <!-- end products -->
@@ -566,9 +628,9 @@
                                     <div class="collapse" id="pagesCollapseAuth"
                                         data-bs-parent="#accordionSidenavPagesMenu">
                                         <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPagesAuth">
-                                            <RouterLink class="nav-link" to="/dashboard/categories">All Categories
+                                            <RouterLink class="nav-link" to="/dashboard/neighborhoods">All Neighborhoods
                                             </RouterLink>
-                                            <RouterLink class="nav-link" to="/dashboard/categories/create">Add Category
+                                            <RouterLink class="nav-link" to="/dashboard/neighborhoods/create">Add Neighborhood
                                             </RouterLink>
                                         </nav>
                                     </div>

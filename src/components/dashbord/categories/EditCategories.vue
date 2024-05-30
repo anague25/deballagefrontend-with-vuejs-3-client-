@@ -124,7 +124,7 @@ export default {
             }
         };
 
-        const fetchCategories = async () => {
+        const fetchAllCategories = async () => {
             try {
                 await store.dispatch('categories/fetchAllCategories');
                 categories.value = store.getters['categories/allCategories'];
@@ -149,8 +149,7 @@ export default {
 
 
         onMounted(() => {
-            fetchCategories();
-            // console.log(fetchCategories);
+            fetchAllCategories();
             loadCategory(route.params.id);
         });
 

@@ -1,4 +1,5 @@
 import './assets/main.css'
+import 'tom-select/dist/css/tom-select.css';
 
 import { createApp } from 'vue';
 import App from './App.vue';

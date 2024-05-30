@@ -3,6 +3,7 @@ import toast from '@/plugins/Notification';
 
 const state = {
   attributes: [],
+  allAttributes: [],
   currentPage: 1,
   totalPages: 0,
   totalAttributes: 0,
@@ -12,7 +13,8 @@ const state = {
 };
 
 const getters = {
-  allAttributes: (state) => state.attributes,
+  allAttributes: (state) => state.allAttributes,
+  attributes: (state) => state.attributes,
   attributeById: (state) => (id) => state.attributes.find(attr => attr.id === id),
   totalPages: (state) => state.totalPages,
   currentPage: (state) => state.currentPage,
@@ -27,6 +29,9 @@ const mutations = {
     state.totalPages = meta.last_page;
     state.totalAttributes = meta.total;
     state.attributesPerPage = meta.per_page; // Récupération dynamique
+  },
+  setAllAttributes(state,{data}){
+    state.allAttributes = data;
   },
  
     setCurrentPageBeforeUpdate(state, page) {
@@ -55,6 +60,18 @@ const actions = {
       commit('setAttributes', { data: response.data.data, meta: response.data.meta });
     } catch (error) {
       toast.error('Failed to fetch attributes');
+    }
+  },
+
+  async fetchAllAttributes({ commit }) {
+    try {
+      const response = await attributeService.fetchAllAttributes();
+      console.log(response.data);
+      commit('setAllAttributes', response.data);
+    } catch (error) {
+      console.log(error);
+
+      toast.error('Failed to fetch all Attributes');
     }
   },
   async createAttribute({ commit }, attribute) {

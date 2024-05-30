@@ -1,19 +1,19 @@
 <template>
     <main>
         <PageHeader>
-            <template #title>Neighborhoods</template>
-            <template #subtitle>The List Of Neighborhoods</template>
+            <template #title>Properties</template>
+            <template #subtitle>The List Of Properties</template>
         </PageHeader>
         <!-- Main page content-->
         <div class="container-xl px-4 mt-n10">
             <!-- Example DataTable for Dashboard Demo-->
             <div class="card mb-4">
-                <div class="card-header">Neighborhoods Management</div>
+                <div class="card-header">Properties Management</div>
                 <div class="card-body">
                     <div class="dataTable-wrapper no-footer fixed-columns">
                         <div class="dataTable-top">
-                            <router-link class="btn btn-primary btn-sm" to="/dashboard/neighborhoods/create">Create New
-                                Neighborhood</router-link>
+                            <router-link class="btn btn-primary btn-sm" to="/dashboard/properties/create">Create New
+                                Properties</router-link>
                             <div class="dataTable-search">
                                 <input class="dataTable-input" placeholder="Search..." v-model="searchInput"
                                     type="search">
@@ -24,16 +24,16 @@
                                 <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>City</th>
+                                        <th>Attribute</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="neighborhood in filterNeighborhoods" :key="neighborhood.id">
-                                        <td>{{ neighborhood.name }}</td>
-                                        <td>{{ neighborhood.city?.name }}</td>
+                                    <tr v-for="property in filterProperties" :key="property.id">
+                                        <td>{{ property.name }}</td>
+                                        <td>{{ property.attribute?.name }}</td>
                                         <td>
-                                            <button @click="confirmDelete(neighborhood.id)"
+                                            <button @click="confirmDelete(property.id)"
                                                 class="btn btn-datatable m-1 btn-icon btn-transparent-dark">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -47,7 +47,7 @@
                                                     <line x1="14" y1="11" x2="14" y2="17"></line>
                                                 </svg>
                                             </button>
-                                            <router-link :to="'/dashboard/neighborhoods/edit/' + neighborhood.id"
+                                            <router-link :to="'/dashboard/properties/edit/' + property.id"
                                                 class="btn btn-primary btn-sm m-1">Edit</router-link>
                                         </td>
                                     </tr>
@@ -89,22 +89,22 @@ export default {
         const router = useRouter();
         const searchInput = ref('');
 
-        const fetchNeighborhoods = async (page = 1) => {
+        const fetchProperties = async (page = 1) => {
             try {
-                await store.dispatch('neighborhoods/fetchNeighborhoods', { page: page, search: searchInput.value });
+                await store.dispatch('properties/fetchProperties', { page: page, search: searchInput.value });
                 updateURLWithCurrentPage(page);
             } catch (error) {
-                console.error('Failed to fetch Neighborhoods:', error);
+                console.error('Failed to fetch properties:', error);
             }
         };
 
         const fetchPage = (page) => {
             if (page > 0 && page <= totalPages.value) {
-                fetchNeighborhoods(page);
+                fetchProperties(page);
             }
         };
 
-        const confirmDelete = (neighborhoodId) => {
+        const confirmDelete = (propertyId) => {
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -114,28 +114,28 @@ export default {
             }).then((result) => {
                 if (result.isConfirmed) {
                     // console.log(neighborhoodId)
-                    store.dispatch('neighborhoods/deleteNeighborhood', neighborhoodId);
-                    fetchNeighborhoods();
+                    store.dispatch('properties/deleteProperty', propertyId);
+                    fetchProperties();
                 }
             });
         };
 
-        const { neighborhoods, totalPages, currentPage, elementsPerPage, totalElements } = toRefs(store.state.neighborhoods);
+        const { properties, totalPages, currentPage, elementsPerPage, totalElements } = toRefs(store.state.properties);
 
-        const filterNeighborhoods = computed(() => {
+        const filterProperties = computed(() => {
             const searchQuery = searchInput.value.toLowerCase().trim();
 
             if (!searchQuery) {
-                return neighborhoods.value;
+                return properties.value;
             }
 
-            return neighborhoods.value.filter(neighborhood => {
-                return neighborhood.name && neighborhood.name.toLowerCase().includes(searchQuery);
+            return properties.value.filter(property => {
+                return property.name && property.name.toLowerCase().includes(searchQuery);
             });
         });
 
         watch(searchInput, (newValue, oldValue) => {
-            fetchNeighborhoods();
+            fetchProperties();
         });
 
 
@@ -144,10 +144,10 @@ export default {
 
         onMounted(async () => {
             const currentPage = route.query.page || 1;
-            await fetchNeighborhoods(currentPage);
+            await fetchProperties(currentPage);
 
             if (route.query.success === 'true') {
-                Notification.success('neighborhood updated successfully');
+                Notification.success('Properties updated successfully');
                 setTimeout(() => {
                     const { success, ...query } = route.query;
                     router.replace({ query });
@@ -161,12 +161,12 @@ export default {
         };
 
         return {
-            neighborhoods,
+            properties,
             confirmDelete,
-            fetchNeighborhoods,
+            fetchProperties,
             fetchPage,
             searchInput,
-            filterNeighborhoods,
+            filterProperties,
             totalPages,
             currentPage,
             elementsPerPage,
