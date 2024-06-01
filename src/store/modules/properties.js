@@ -1,9 +1,12 @@
 import toast from '@/plugins/Notification';
 import propertiesService from '@/services/properties/propertiesService';
+import attributeService from '@/services/attributes/attributeService';
+
 
 const state = {
   properties: [],
   allProperties: [],
+  propertiesByAttribute: {},
   currentPage: 1,
   totalPages: 0,
   totalElements: 0,
@@ -13,6 +16,7 @@ const state = {
 };
 
 const getters = {
+  propertiesByAttribute: (state) => state.propertiesByAttribute,
   properties: (state) => state.properties,
   allProperties: (state) => state.allProperties,
   propertyById: (state) => (id) => state.properties.find(attr => attr.id === id),
@@ -24,6 +28,13 @@ const getters = {
 };
 
 const mutations = {
+  setPropertiesByAttribute(state, { attributeId, properties }) {
+    state.propertiesByAttribute = {
+      ...state.propertiesByAttribute,
+      [attributeId]: properties,
+    };
+  },
+
   setProperties(state, { data, meta }) {
     state.properties = data;
     state.currentPage = meta.current_page;
@@ -55,6 +66,16 @@ const mutations = {
 };
 
 const actions = {
+  async fetchPropertiesByAttribute({ commit }, attributeId) {
+    try {
+      const response = await attributeService.fetchAttributeWithProperties(attributeId);
+      console.log(response.data.data.properties);
+      commit('setPropertiesByAttribute', { attributeId, properties: response.data.data.properties });
+    } catch (error) {
+      console.error(error);
+      toast.error('Échec de la récupération des propriétés');
+    }
+  },
   async fetchProperties({ commit }, {page = 1,search}) {
     try {
       const response = await propertiesService.fetchProperties(page,search);
@@ -71,7 +92,6 @@ const actions = {
       commit('setAllProperties', response.data);
     } catch (error) {
       console.log(error);
-
       toast.error('Failed to fetch all properties');
     }
   },

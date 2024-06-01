@@ -19,7 +19,8 @@ export default {
   },
 
   updateProduct(property) {
-    return axios.put(`${API_URL}/${property.id}`, property);
+    const id = property.get('id');
+    return axios.post(`${API_URL}/${id}`, property);
   },
 
 

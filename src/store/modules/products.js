@@ -15,7 +15,7 @@ const state = {
 const getters = {
   products: (state) => state.products,
   allProducts: (state) => state.allProducts,
-  propertyById: (state) => (id) => state.products.find(attr => attr.id === id),
+  productById: (state) => (id) => state.products.find(attr => attr.id === id),
   totalPages: (state) => state.totalPages,
   currentPage: (state) => state.currentPage,
   totalElements: (state) => state.totalElements,
@@ -40,8 +40,8 @@ const mutations = {
     },
   
   
-  addProduct(state, property) {
-    state.products.push(property);
+  addProduct(state, product) {
+    state.products.push(product);
   },
   updateProduct(state, updatedProduct) {
     const index = state.products.findIndex(attr => attr.id === updatedProduct.id);
@@ -76,9 +76,9 @@ const actions = {
     }
   },
 
-  async createProduct({ commit }, property) {
+  async createProduct({ commit }, product) {
     try {
-      const response = await productsService.createProduct(property);
+      const response = await productsService.createProduct(product);
       commit('addProduct', response.data);
       toast.success('Products created successfully');
     } catch (error) {
@@ -90,9 +90,9 @@ const actions = {
     }
   },
 
-  async updateProduct({ commit, dispatch, state }, property) {
+  async updateProduct({ commit, dispatch, state }, product) {
     try {
-        const response = await productsService.updateProduct(property);
+        const response = await productsService.updateProduct(product);
         commit('updateProduct', response.data);
         // console.log('kkkkkkkkkkkkkkkkkkkkkkkkkk');
 
@@ -107,10 +107,10 @@ const actions = {
     }
 }
 ,
-  async deleteProduct({ commit }, property) {
+  async deleteProduct({ commit }, product) {
     try {
-      await productsService.deleteProduct(property);
-      commit('deleteProduct', property);
+      await productsService.deleteProduct(product);
+      commit('deleteProduct', product);
       toast.success('Products deleted successfully');
     } catch (error) {
      console.log(error);
