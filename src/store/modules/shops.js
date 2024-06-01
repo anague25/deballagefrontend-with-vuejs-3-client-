@@ -67,12 +67,10 @@ const actions = {
   async fetchAllShops({ commit }) {
     try {
       const response = await shopsService.fetchAllShops();
-      console.log(response.data);
+      console.log(response);
       commit('setAllShops', response.data);
     } catch (error) {
       console.log(error);
-
-      toast.error('Failed to fetch all shops');
     }
   },
 

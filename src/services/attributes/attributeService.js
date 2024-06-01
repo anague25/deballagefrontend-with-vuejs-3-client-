@@ -15,6 +15,12 @@ export default {
   fetchAllAttributes() {
     return axios.get(`${API_URL}/all`);
   },
+
+
+  fetchAttributeWithProperties(attributeId) {
+    return axios.get(`${API_URL}/${attributeId}`);
+  },
+
   createAttribute(attribute) {
     return axios.post(API_URL, attribute);
   },
