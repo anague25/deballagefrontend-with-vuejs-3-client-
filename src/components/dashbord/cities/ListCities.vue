@@ -1,19 +1,20 @@
 <template>
     <main>
         <PageHeader>
-            <template #title>Cities</template>
-            <template #subtitle>The List Of Cities</template>
+            <template #title>Villes</template>
+            <template #subtitle>Listes des villes</template>
         </PageHeader>
+        <Loader></Loader>
         <!-- Main page content-->
         <div class="container-xl px-4 mt-n10">
             <!-- Example DataTable for Dashboard Demo-->
             <div class="card mb-4">
-                <div class="card-header">Cities Management</div>
+                <div class="card-header">Gerer les villes</div>
                 <div class="card-body">
                     <div class="dataTable-wrapper no-footer fixed-columns">
                         <div class="dataTable-top">
-                            <router-link class="btn btn-primary btn-sm" to="/dashboard/cities/create">Create New
-                                Cities</router-link>
+                            <router-link class="btn btn-primary btn-sm" to="/dashboard/cities/create">Creer une
+                                ville</router-link>
                             <div class="dataTable-search">
                                 <input class="dataTable-input" placeholder="Search..." v-model="searchInput"
                                     type="search">
@@ -23,7 +24,7 @@
                             <table class="dataTable-table">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
+                                        <th>Nom</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -46,7 +47,7 @@
                                                 </svg>
                                             </button>
                                             <router-link :to="'/dashboard/cities/edit/' + city.id"
-                                                class="btn btn-primary btn-sm m-1">Edit</router-link>
+                                                class="btn btn-primary btn-sm m-1">Modifier</router-link>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -74,12 +75,14 @@ import { useRoute, useRouter } from 'vue-router';
 import Notification from '@/plugins/Notification';
 import PageHeader from '@/components/dashbord/dashboardSlots/PageHeader.vue';
 import Pagination from '@/components/dashbord/dashboardSlots/Pagination.vue';
+import Loader from '@/components/dashbord/loader/Loader.vue';
 
 
 export default {
     components: {
         PageHeader,
-        Pagination
+        Pagination,
+        Loader
     },
     setup() {
         const store = useStore();
@@ -88,11 +91,14 @@ export default {
         const searchInput = ref('');
 
         const fetchCities = async (page = 1) => {
+            store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('cities/fetchCities', { page: page, search: searchInput.value });
                 updateURLWithCurrentPage(page);
             } catch (error) {
                 console.error('Failed to fetch Categories:', error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
@@ -112,6 +118,7 @@ export default {
             }).then((result) => {
                 if (result.isConfirmed) {
                     store.dispatch('cities/deleteCity', cityId);
+                    fetchCities();
                 }
             });
         };

@@ -11,6 +11,10 @@ export default {
     });
   },
 
+  fetchNeighborhoodsByCity(CityId) {
+    return axios.get(`${API_URL}/${CityId}`);
+  },
+
   fetchAllCities() {
     return axios.get(`${API_URL}/all`);
   },

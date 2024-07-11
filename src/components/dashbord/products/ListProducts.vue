@@ -1,19 +1,20 @@
 <template>
     <main>
         <PageHeader>
-            <template #title>Products</template>
-            <template #subtitle>The List Of Products</template>
+            <template #title>Produits</template>
+            <template #subtitle>Listes des produits</template>
         </PageHeader>
+        <Loader></Loader>
         <!-- Main page content-->
         <div class="container-xl px-4 mt-n10">
             <!-- Example DataTable for Dashboard Demo-->
             <div class="card mb-4">
-                <div class="card-header">Products Management</div>
+                <div class="card-header">Gerer les produits</div>
                 <div class="card-body">
                     <div class="dataTable-wrapper no-footer fixed-columns">
                         <div class="dataTable-top">
-                            <router-link class="btn btn-primary btn-sm" to="/dashboard/products/create">Create New
-                                Products</router-link>
+                            <router-link class="btn btn-primary btn-sm" to="/dashboard/products/create">Creer un
+                                produit</router-link>
                             <div class="dataTable-search">
                                 <input class="dataTable-input" placeholder="Search..." v-model="searchInput"
                                     type="search">
@@ -23,12 +24,12 @@
                             <table class="dataTable-table">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
+                                        <th>Nom</th>
+                                        <th>Prix</th>
+                                        <th>Quantite</th>
                                         <th>Description</th>
-                                        <th>Shop</th>
-                                        <th>Category</th>
+                                        <th>Boutique</th>
+                                        <th>Categorie</th>
                                         <th>Image</th>
                                         <th>Action</th>
                                     </tr>
@@ -42,8 +43,7 @@
                                         <td>{{ product.shop?.name }}</td>
                                         <td>{{ product.category?.name }}</td>
                                         <td>
-                                            <img :src="path + product.image" alt="product Image" width="50"
-                                                height="50">
+                                            <img :src="path + product.image" alt="product Image" width="50" height="50">
                                         </td>
                                         <td>
                                             <button @click="confirmDelete(product.id)"
@@ -61,7 +61,7 @@
                                                 </svg>
                                             </button>
                                             <router-link :to="'/dashboard/products/edit/' + product.id"
-                                                class="btn btn-primary btn-sm m-1">Edit</router-link>
+                                                class="btn btn-primary btn-sm m-1">Modifier</router-link>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -89,12 +89,14 @@ import { useRoute, useRouter } from 'vue-router';
 import Notification from '@/plugins/Notification';
 import PageHeader from '@/components/dashbord/dashboardSlots/PageHeader.vue';
 import Pagination from '@/components/dashbord/dashboardSlots/Pagination.vue';
+import Loader from '@/components/dashbord/loader/Loader.vue';
 
 
 export default {
     components: {
         PageHeader,
-        Pagination
+        Pagination,
+        Loader
     },
     setup() {
         const store = useStore();
@@ -104,11 +106,14 @@ export default {
         const path = store.getters['getImagePaths/getPath'];
 
         const fetchProducts = async (page = 1) => {
+            store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('products/fetchProducts', { page: page, search: searchInput.value });
                 updateURLWithCurrentPage(page);
             } catch (error) {
                 console.error('Failed to fetch products:', error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
@@ -129,13 +134,13 @@ export default {
                 if (result.isConfirmed) {
                     // console.log(neighborhoodId)
                     store.dispatch('products/deleteProduct', productId);
-                    fetchProperties();
+                    fetchProducts();
                 }
             });
         };
 
         const { products, totalPages, currentPage, elementsPerPage, totalElements } = toRefs(store.state.products);
-       
+
 
         const filterProducts = computed(() => {
             const searchQuery = searchInput.value.toLowerCase().trim();
@@ -163,7 +168,7 @@ export default {
             await fetchProducts(currentPage);
 
             if (route.query.success === 'true') {
-                Notification.success('Products updated successfully');
+                Notification.success('Produits modifier avec success');
                 setTimeout(() => {
                     const { success, ...query } = route.query;
                     router.replace({ query });

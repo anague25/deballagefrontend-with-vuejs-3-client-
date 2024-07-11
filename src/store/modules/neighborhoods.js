@@ -1,7 +1,10 @@
 import toast from '@/plugins/Notification';
 import neighborhoodsService from '@/services/neighborhoods/neighborhoodsService';
+import citiesService from '@/services/cities/citiesService';
+
 
 const state = {
+  neighborhoodsByCity:{},
   neighborhoods: [],
   allNeighborhoods: [],
   currentPage: 1,
@@ -14,6 +17,7 @@ const state = {
 };
 
 const getters = {
+  neighborhoodsByCity: (state) => state.neighborhoodsByCity,
   neighborhoods: (state) => state.neighborhoods,
   allNeighborhoods: (state) => state.allNeighborhoods,
   neighborhoodById: (state) => (id) => state.neighborhoods.find(attr => attr.id === id),
@@ -25,6 +29,12 @@ const getters = {
 };
 
 const mutations = {
+  setNeighborhoodsByCity(state, { cityId, neighborhoods }) {
+    state.neighborhoodsByCity = {
+      ...state.neighborhoodsByCity,
+      [cityId]: neighborhoods,
+    };
+  },
   setNeighborhoods(state, { data, meta }) {
     state.neighborhoods = data;
     state.currentPage = meta.current_page;
@@ -56,6 +66,20 @@ const mutations = {
 };
 
 const actions = {
+  async fetchNeighborhoodsByCity({ commit }, cityId) {
+    try {
+      const response = await citiesService.fetchNeighborhoodsByCity(cityId);
+      console.log(response);
+      commit('setNeighborhoodsByCity', { cityId, neighborhoods: response.data.data.neighborhoods });
+    } catch (error) {
+      console.error(error);
+    }
+  },
+
+
+
+
+
   async fetchNeighborhoods({ commit }, {page = 1,search}) {
     try {
       const response = await neighborhoodsService.fetchNeighborhoods(page,search);

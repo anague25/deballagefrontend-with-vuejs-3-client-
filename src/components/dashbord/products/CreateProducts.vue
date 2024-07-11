@@ -2,9 +2,10 @@
 
     <main>
         <PageHeader>
-            <template #title>Products</template>
-            <template #subtitle>Create A Products</template>
+            <template #title>Produits</template>
+            <template #subtitle>Creer un Produit</template>
         </PageHeader>
+        <Loader></Loader>
         <!-- Main page content-->
         <div class="container-xl px-4 mt-n10">
 
@@ -12,14 +13,14 @@
 
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between">
-                    <p>Products Management</p>
-                    <RouterLink to='/dashboard/products' class="btn btn-primary btn-sm">All Products</RouterLink>
+                    <p>Gerer les produits</p>
+                    <RouterLink to='/dashboard/products' class="btn btn-primary btn-sm">Produits</RouterLink>
                 </div>
                 <div class="card-body">
                     <form @submit.prevent="createNewProduct" enctype="multipart/form-data">
                         <!-- Form Group (username)-->
                         <div class="mb-3">
-                            <label class="small mb-1" for="name"><b>Product Name</b></label>
+                            <label class="small mb-1" for="name"><b>Nom</b></label>
                             <input type="text" class="form-control" v-model="name" id="name"
                                 placeholder="Enter Property Name">
                             <span v-if="errors.name" class="text-danger m-1">{{ errors.name[0] }}</span>
@@ -27,15 +28,15 @@
 
 
                         <div class="mb-3">
-                            <label class="small mb-1" for="name"><b>Price</b></label>
+                            <label class="small mb-1" for="name"><b>prix</b></label>
                             <input type="number" class="form-control" v-model="price" id="price"
                                 placeholder="Enter Product Price">
                             <span v-if="errors.price" class="text-danger m-1">{{ errors.price[0] }}</span>
                         </div>
 
                         <div class="mb-3">
-                            <label class="small mb-1" for="quantity"><b>Quantity</b></label>
-                            <input type="text" class="form-control" v-model="quantity" id="name"
+                            <label class="small mb-1" for="quantity"><b>Quantite</b></label>
+                            <input type="number" class="form-control" v-model="quantity" id="name"
                                 placeholder="Enter Product Quantity">
                             <span v-if="errors.quantity" class="text-danger m-1">{{ errors.quantity[0] }}</span>
                         </div>
@@ -49,12 +50,11 @@
 
 
                         <div class="mb-3">
-                            <label class="small mb-1" for="category_id"><b>Choose the Category</b></label>
+                            <label class="small mb-1" for="category_id"><b>Categorie</b></label>
                             <select class="form-control" v-model="category_id" id="category_id" autocomplete="off">
                                 <option value="">None</option>
-                                <option v-for="category in categories" :key="category.id" :value="category.id">{{
-                        category.name
-                    }}</option>
+                                <option v-for="category in categories" :key="category.id" :value="category.id">
+                                    {{ category.name }}</option>
                             </select>
                             <span v-if="errors.category_id" class="text-danger m-1">{{ errors.category_id[0] }}</span>
                         </div>
@@ -62,12 +62,11 @@
 
 
                         <div class="mb-3">
-                            <label class="small mb-1" for="ex-dropdown-input"><b>Choose the Shop</b></label>
+                            <label class="small mb-1" for="ex-dropdown-input"><b>Boutique</b></label>
                             <select class="form-control" v-model="shop_id" id="ex-dropdown-input" autocomplete="off">
                                 <option value="">None</option>
-                                <option v-for="shop in shops" :key="shop.id" :value="shop.id">{{
-                        shop.name
-                    }}</option>
+                                <option v-for="shop in shops" :key="shop.id" :value="shop.id">
+                                    {{ shop.name }}</option>
                             </select>
                             <span v-if="errors.shop_id" class="text-danger m-1">{{ errors.shop_id[0] }}</span>
                         </div>
@@ -81,15 +80,21 @@
                         <div v-for="(field, index) in attribute_fields" :key="index">
                             <label><b>Attribute</b></label>
                             <select class="form-control" v-model="field.attribute_id"
-                                @change="fetchProperties(field.attribute_id, index)" >
-                                <option v-for="attribute in attributes" :key="attribute.id" :value="attribute.id">{{
-                        attribute.name }}</option>
+                                @change="fetchProperties(field.attribute_id, index)">
+                                <option v-for="attribute in attributes" :key="attribute.id" :value="attribute.id">
+                                    {{ attribute.name }}</option>
                             </select>
+                            <span v-if="errors[`attribute_fields.${index}.attribute_id`]" class="text-danger m-1">{{
+                                errors[`attribute_fields.${index}.attribute_id`][0] }}</span>
+                            <br>
                             <label><b>Propriété</b></label>
-                            <select class="form-control" v-model="field.property_id" >
+                            <select class="form-control" v-model="field.property_id">
                                 <option v-for="property in properties[index]" :key="property.id" :value="property.id">{{
-                        property.name }}</option>
+                                    property.name }}</option>
                             </select>
+                            <span v-if="errors[`attribute_fields.${index}.property_id`]" class="text-danger m-1">{{
+                                errors[`attribute_fields.${index}.property_id`][0] }}</span>
+                            <br>
                             <button class="btn btn-danger btn-sm my-2" type="button"
                                 @click="removeField(index)">Supprimer</button>
                         </div>
@@ -100,7 +105,7 @@
 
 
                         <div class="mb-3">
-                            <label class="small mb-1" for="image"><b>Main Image</b></label>
+                            <label class="small mb-1" for="image"><b>Image principale</b></label>
                             <input type="file" class="form-control" @change="onFileChange" id="image"
                                 placeholder="Enter Product Image">
                             <img v-if="imageUrl" :src="imageUrl" alt="Selected Image" class="mt-2" width="50"
@@ -110,14 +115,14 @@
 
 
                         <div class="mb-3">
-                            <label class="small mb-1" for="images"><b>Products Images</b></label>
+                            <label class="small mb-1" for="images"><b>Images secondaires</b></label>
                             <input type="file" class="form-control" id="images" multiple @change="handleFileUpload" />
                             <span v-if="errors.images" class="text-danger m-1">{{ errors.image[0] }}</span>
                         </div>
 
 
                         <!-- Save changes button-->
-                        <button class="btn btn-primary" type="submit">Create</button>
+                        <button class="btn btn-primary" type="submit">Creer</button>
                     </form>
                 </div>
             </div>
@@ -127,14 +132,22 @@
 </template>
 
 <script>
-import { ref, onMounted, reactive } from 'vue';
-import { useStore } from 'vuex';
+import {
+    ref,
+    onMounted,
+    reactive
+} from 'vue';
+import {
+    useStore
+} from 'vuex';
 import PageHeader from '@/components/dashbord/dashboardSlots/PageHeader.vue';
 import TomSelect from 'tom-select';
+import Loader from '@/components/dashbord/loader/Loader.vue';
 
 export default {
     components: {
-        PageHeader
+        PageHeader,
+        Loader
     },
     setup() {
         const store = useStore();
@@ -160,29 +173,38 @@ export default {
         const shop_id = ref('');
 
         const fetchAllCategories = async () => {
+             store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('categories/fetchAllCategories');
                 categories.value = store.getters['categories/allCategories'];
             } catch (error) {
                 console.log(error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
         const fetchAllAtributes = async () => {
+             store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('attributes/fetchAllAttributes');
                 attributes.value = store.getters['attributes/allAttributes'];
             } catch (error) {
                 console.log(error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
         const fetchAllShops = async () => {
+             store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('shops/fetchAllShops');
                 shops.value = store.getters['shops/allShops'];
             } catch (error) {
                 console.log(error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
@@ -192,12 +214,18 @@ export default {
         };
 
         const addDefaultField = () => {
-            attribute_fields.push({ attribute_id: '', property_id: '' });
+            attribute_fields.push({
+                attribute_id: '',
+                property_id: ''
+            });
         };
 
 
         const addField = () => {
-            attribute_fields.push({ attribute_id: '', property_id: '' });
+            attribute_fields.push({
+                attribute_id: '',
+                property_id: ''
+            });
         };
 
         const removeField = (index) => {
@@ -223,6 +251,7 @@ export default {
 
         const createNewProduct = async () => {
             errors.value = {};
+            store.dispatch('loader/setLoading', true);
             try {
                 const formData = new FormData();
                 formData.append('name', name.value);
@@ -246,24 +275,18 @@ export default {
                 });
 
                 // console.log(image.value);
-                
+                for (let [key, value] of formData.entries()) {
+                    console.log(`${key}: ${value}`);
+                }
                 await store.dispatch('products/createProduct', formData);
                 console.log('arrive');
-                name.value = '';
-                // attribute_id.value = '';
-                price.value = '';
-                // property_id.value = '';
-                quantity.value = '';
-                description.value = '';
-                shop_id.value = '';
-                category_id.value
-                image.value = '';
-                images.value = '';
 
 
             } catch (validationErrors) {
                 errors.value = validationErrors;
                 console.log(validationErrors);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 

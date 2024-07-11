@@ -2,9 +2,10 @@
 
     <main>
         <PageHeader>
-            <template #title>Categories</template>
-            <template #subtitle>Edit A Categories</template>
+            <template #title>Categoriese</template>
+            <template #subtitle>Modifier une categoriese</template>
         </PageHeader>
+        <Loader></Loader>
         <!-- Main page content-->
         <div class="container-xl px-4 mt-n10">
 
@@ -12,27 +13,28 @@
 
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between">
-                    <p>Categories Management</p>
-                    <RouterLink to='/dashboard/categories' class="btn btn-primary btn-sm">All Categories</RouterLink>
+                    <p>Gerer les Categoriese</p>
+                    <RouterLink to='/dashboard/categories' class="btn btn-primary btn-sm">Toutes les Categoriese
+                    </RouterLink>
                 </div>
                 <div class="card-body">
                     <form @submit.prevent="updateExistingCategory">
                         <!-- Form Group (username)-->
                         <div class="mb-3">
-                            <label class="small mb-1" for="name"><b>Category Name</b></label>
+                            <label class="small mb-1" for="name"><b>Nome</b></label>
                             <input type="text" class="form-control" v-model="name" id="name"
                                 placeholder="Enter Category Name">
                             <span v-if="errors.name" class="text-danger m-1">{{ errors.name[0] }}</span>
                         </div>
 
                         <div class="mb-3">
-                            <label class="small mb-1" for="description"><b>Category Description</b></label>
+                            <label class="small mb-1" for="description"><b>Descriptione</b></label>
                             <input type="text" class="form-control" v-model="description" id="description"
                                 placeholder="Enter Category Description">
                             <span v-if="errors.description" class="text-danger m-1">{{ errors.description[0] }}</span>
                         </div>
                         <div class="mb-3">
-                            <label class="small mb-1" for="image"><b>Category Image</b></label>
+                            <label class="small mb-1" for="image"><b>Imagee</b></label>
                             <input type="file" class="form-control" @change="onFileChange" id="image"
                                 placeholder="Enter Category Image">
                             <img v-if="imageUrl" :src="imageUrl" alt="Selected Image" class="mt-2" width="50"
@@ -41,17 +43,17 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="small mb-1" for="parent_id"><b>Parent Category</b></label>
+                            <label class="small mb-1" for="parent_id"><b>Categorie Parente</b></label>
                             <select class="form-control" v-model="parent_id" id="parent_id">
                                 <option value="">None</option>
                                 <option v-for="category in categories" :key="category.id" :value="category.id">{{
-                        category.name
-                    }}</option>
+                                    category.name
+                                    }}</option>
                             </select>
                             <span v-if="errors.parent_id" class="text-danger m-1">{{ errors.parent_id[0] }}</span>
                         </div>
                         <!-- Save changes button-->
-                        <button class="btn btn-primary" type="submit">Update</button>
+                        <button class="btn btn-primary" type="submit">Modifier</button>
                     </form>
                 </div>
             </div>
@@ -65,10 +67,12 @@ import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
 import PageHeader from '@/components/dashbord/dashboardSlots/PageHeader.vue';
+import Loader from '@/components/dashbord/loader/Loader.vue';
 
 export default {
     components: {
-        PageHeader
+        PageHeader,
+        Loader
     },
     setup() {
         const store = useStore();
@@ -87,7 +91,7 @@ export default {
         const loadCategory = async (id) => {
             id = Number(id); // Convertir l'ID en nombre
             const category = store.getters['categories/categoryById'](id);
-            const path = store.getters['categories/getPath'];
+            const path = store.getters['getImagePaths/getPath'];
             if (category) {
                 name.value = category.name;
                 description.value = category.description;
@@ -105,6 +109,7 @@ export default {
 
         const updateExistingCategory = async () => {
             errors.value = {};
+            store.dispatch('loader/setLoading', true);
             try {
 
                 const formData = new FormData();
@@ -121,15 +126,20 @@ export default {
                 router.push({ path: '/dashboard/categories', query: { success: true, page: currentPage } });
             } catch (validationErrors) {
                 errors.value = validationErrors;
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
         const fetchAllCategories = async () => {
+            store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('categories/fetchAllCategories');
                 categories.value = store.getters['categories/allCategories'];
             } catch (error) {
                 console.log(error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 

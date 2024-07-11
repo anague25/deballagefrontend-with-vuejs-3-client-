@@ -14,8 +14,13 @@ export default {
   fetchAllCategories() {
     return axios.get(`${API_URL}/all`);
   },
+
   createCategory(Category) {
     return axios.post(API_URL, Category);
+  },
+
+  fetchSubCategoriesByCategory(categoryId) {
+    return axios.get(`${API_URL}/${categoryId}`);
   },
 
   // updateCategory(category) {

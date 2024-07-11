@@ -2,9 +2,10 @@
 
     <main>
         <PageHeader>
-            <template #title>Products</template>
-            <template #subtitle>Create A Products</template>
+            <template #title>Boutiques</template>
+            <template #subtitle>Ajouter une boutique</template>
         </PageHeader>
+        <Loader></Loader>
         <!-- Main page content-->
         <div class="container-xl px-4 mt-n10">
 
@@ -12,109 +13,126 @@
 
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between">
-                    <p>Products Management</p>
-                    <RouterLink to='/dashboard/products' class="btn btn-primary btn-sm">All Products</RouterLink>
+                    <p>Gerer les boutiques</p>
+                    <RouterLink to='/dashboard/shops' class="btn btn-primary btn-sm">Boutiques</RouterLink>
                 </div>
                 <div class="card-body">
-                    <form @submit.prevent="createNewProduct" enctype="multipart/form-data">
+                    <form @submit.prevent="createNewShop" enctype="multipart/form-data">
                         <!-- Form Group (username)-->
                         <div class="mb-3">
-                            <label class="small mb-1" for="name"><b>Product Name</b></label>
+                            <label class="small mb-1" for="name"><b>Nom</b></label>
                             <input type="text" class="form-control" v-model="name" id="name"
                                 placeholder="Enter Property Name">
                             <span v-if="errors.name" class="text-danger m-1">{{ errors.name[0] }}</span>
                         </div>
 
-
-                        <div class="mb-3">
-                            <label class="small mb-1" for="name"><b>Price</b></label>
-                            <input type="number" class="form-control" v-model="price" id="price"
-                                placeholder="Enter Product Price">
-                            <span v-if="errors.price" class="text-danger m-1">{{ errors.price[0] }}</span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="small mb-1" for="quantity"><b>Quantity</b></label>
-                            <input type="text" class="form-control" v-model="quantity" id="name"
-                                placeholder="Enter Product Quantity">
-                            <span v-if="errors.quantity" class="text-danger m-1">{{ errors.quantity[0] }}</span>
-                        </div>
-
                         <div class="mb-3">
                             <label class="small mb-1" for="description"><b>Description</b></label>
                             <textarea class="form-control" v-model="description" id="description"
-                                placeholder="Enter Product Description "></textarea>
+                                placeholder="Enter Shop Description "></textarea>
                             <span v-if="errors.description" class="text-danger m-1">{{ errors.description[0] }}</span>
                         </div>
 
 
                         <div class="mb-3">
-                            <label class="small mb-1" for="category_id"><b>Choose the Category</b></label>
-                            <select class="form-control" v-model="category_id" id="category_id" autocomplete="off">
+                            <label class="small mb-1" for="ex-dropdown-input"><b>Utilisateur</b></label>
+                            <select class="form-control" v-model="user_id" id="ex-dropdown-input" autocomplete="off">
                                 <option value="">None</option>
-                                <option v-for="category in categories" :key="category.id" :value="category.id">{{
-                        category.name
-                    }}</option>
+                                <option v-for="user in users" :key="user.id" :value="user.id">{{
+                                    user.firstName
+                                }}</option>
                             </select>
-                            <span v-if="errors.category_id" class="text-danger m-1">{{ errors.category_id[0] }}</span>
+                            <span v-if="errors.user_id" class="text-danger m-1">{{ errors.user_id[0] }}</span>
                         </div>
-
-
 
                         <div class="mb-3">
-                            <label class="small mb-1" for="ex-dropdown-input"><b>Choose the Shop</b></label>
-                            <select class="form-control" v-model="shop_id" id="ex-dropdown-input" autocomplete="off">
-                                <option value="">None</option>
-                                <option v-for="shop in shops" :key="shop.id" :value="shop.id">{{
-                        shop.name
-                    }}</option>
+                            <label class="small mb-1" for="state"><b>Etat ou permision</b></label>
+                            <select class="form-control" v-model="state" id="state" autocomplete="off">
+                                <option value="init">Init</option>
+                                <option value="enable">Enable</option>
+                                <option value="desable">Desable</option>
+
                             </select>
-                            <span v-if="errors.shop_id" class="text-danger m-1">{{ errors.shop_id[0] }}</span>
+                            <span v-if="errors.state" class="text-danger m-1">{{ errors.state[0] }}</span>
                         </div>
 
 
 
 
 
-
-                        <!-- Champs dynamiques attribut-propriété -->
-                        <div v-for="(field, index) in attribute_fields" :key="index">
-                            <label><b>Attribute</b></label>
-                            <select class="form-control" v-model="field.attribute_id"
-                                @change="fetchProperties(field.attribute_id, index)" >
-                                <option v-for="attribute in attributes" :key="attribute.id" :value="attribute.id">{{
-                        attribute.name }}</option>
+                        <!-- Champs dynamiques cities-beighborhood -->
+                        <div v-for="(field, index) in city_fields" :key="index">
+                            <label><b>Ville</b></label>
+                            <select class="form-control" v-model="field.city_id"
+                                @change="fetchNeighborhoods(field.city_id, index)">
+                                <option v-for="city in cities" :key="city.id" :value="city.id">{{
+                                    city.name }}</option>
                             </select>
-                            <label><b>Propriété</b></label>
-                            <select class="form-control" v-model="field.property_id" >
-                                <option v-for="property in properties[index]" :key="property.id" :value="property.id">{{
-                        property.name }}</option>
+                            <span v-if="errors[`city_fields.${index}.city_id`]" class="text-danger m-1">{{
+                                errors[`city_fields.${index}.city_id`][0] }}</span>
+                            <br>
+                            <label><b>Quartier</b></label>
+                            <select class="form-control" v-model="field.neighborhood_id">
+                                <option v-for="neighborhood in neighborhoods[index]" :key="neighborhood.id"
+                                    :value="neighborhood.id">{{
+                                        neighborhood.name }}</option>
                             </select>
+                            <span v-if="errors[`city_fields.${index}.neighborhood_id`]" class="text-danger m-1">{{
+                                errors[`city_fields.${index}.neighborhood_id`][0] }}</span>
+                            <br>
                             <button class="btn btn-danger btn-sm my-2" type="button"
-                                @click="removeField(index)">Supprimer</button>
+                                @click="removeFieldCityNeighborhood(index)">Supprimer</button>
                         </div>
-                        <button class="btn btn-success btn-sm my-2" type="button" @click="addField">Ajouter
-                            Attribut-Propriété</button>
+                        <button class="btn btn-success btn-sm my-2" type="button"
+                            @click="addFieldCityNeighborhood">Ajouter</button>
+
+
+                        <!-- Champs dynamiques category-subcategory -->
+                        <div v-for="(field, index) in category_fields" :key="index">
+                            <label><b>Categorie</b></label>
+                            <select class="form-control" v-model="field.category_id"
+                                @change="fetchSubCategories(field.category_id, index)">
+                                <option v-for="category in categories" :key="category.id" :value="category.id">{{
+                                    category.name }}</option>
+                            </select>
+                            <span v-if="errors[`category_fields.${index}.category_id`]" class="text-danger m-1">{{
+                                errors[`category_fields.${index}.category_id`][0] }}</span><br>
+
+                            <label><b>Sous-categorie</b></label>
+                            <select class="form-control" v-model="field.subCategory_id">
+                                <option v-for="subCategory in subCategories[index]" :key="subCategory.id"
+                                    :value="subCategory.id">{{
+                                        subCategory.name }}</option>
+                            </select>
+                            <span v-if="errors[`category_fields.${index}.subCategory_id`]" class="text-danger m-1">{{
+                                errors[`category_fields.${index}.subCategory_id`][0] }}</span><br>
+
+                            <button class="btn btn-danger btn-sm my-2" type="button"
+                                @click="removeFieldCategorySubCategory(index)">Supprimer</button>
+                        </div>
+                        <button class="btn btn-success btn-sm my-2" type="button"
+                            @click="addFieldCategorySubCategory">Ajouter</button>
 
 
 
 
                         <div class="mb-3">
-                            <label class="small mb-1" for="image"><b>Main Image</b></label>
-                            <input type="file" class="form-control" @change="onFileChange" id="image"
-                                placeholder="Enter Product Image">
-                            <img v-if="imageUrl" :src="imageUrl" alt="Selected Image" class="mt-2" width="50"
+                            <label class="small mb-1" for="image"><b>Image de profile</b></label>
+                            <input type="file" class="form-control" @change="onFileChangeProfile" id="image"
+                                placeholder="Enter Profie Image">
+                            <img v-if="imageUrlProfile" :src="imageUrlProfile" alt="Selected Image" class="mt-2"
+                                width="50" height="50" />
+                            <span v-if="errors.profile" class="text-danger m-1">{{ errors.profile[0] }}</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small mb-1" for="image"><b>Image de couverture</b></label>
+                            <input type="file" class="form-control" @change="onFileChangeCover" id="image"
+                                placeholder="Enter Cover Image">
+                            <img v-if="imageUrlCover" :src="imageUrlCover" alt="Selected Image" class="mt-2" width="50"
                                 height="50" />
-                            <span v-if="errors.image" class="text-danger m-1">{{ errors.image[0] }}</span>
+                            <span v-if="errors.cover" class="text-danger m-1">{{ errors.cover[0] }}</span>
                         </div>
-
-
-                        <div class="mb-3">
-                            <label class="small mb-1" for="images"><b>Products Images</b></label>
-                            <input type="file" class="form-control" id="images" multiple @change="handleFileUpload" />
-                            <span v-if="errors.images" class="text-danger m-1">{{ errors.image[0] }}</span>
-                        </div>
-
 
                         <!-- Save changes button-->
                         <button class="btn btn-primary" type="submit">Create</button>
@@ -131,139 +149,141 @@ import { ref, onMounted, reactive } from 'vue';
 import { useStore } from 'vuex';
 import PageHeader from '@/components/dashbord/dashboardSlots/PageHeader.vue';
 import TomSelect from 'tom-select';
+import Loader from '@/components/dashbord/loader/Loader.vue';
+
 
 export default {
     components: {
-        PageHeader
+        PageHeader,
+        Loader
     },
     setup() {
         const store = useStore();
-
-
-
-        const attribute_fields = reactive([]);
-        // const attribute_id = ref('');
-        // const property_id = ref('');
-        const quantity = ref('');
+        const category_fields = reactive([]);
+        const city_fields = reactive([]);
         const errors = ref({});
-        const attributes = ref([]);
-        const properties = ref([]);
         const categories = ref([]);
-        const category_id = ref('');
+        const users = ref([]);
+        const cities = ref([]);
+        const neighborhoods = ref([]);
+        const subCategories = ref([]);
         const name = ref('');
-        const image = ref('');
-        const imageUrl = ref('');
-        const images = ref([]);
-        const shops = ref([]);
-        const price = ref('');
+        const state = ref('init');
+        const user_id = ref('');
+        const profile = ref('');
+        const cover = ref('');
+        const imageUrlProfile = ref('');
+        const imageUrlCover = ref('');
         const description = ref('');
-        const shop_id = ref('');
 
         const fetchAllCategories = async () => {
+             store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('categories/fetchAllCategories');
                 categories.value = store.getters['categories/allCategories'];
             } catch (error) {
                 console.log(error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
-        const fetchAllAtributes = async () => {
+        const fetchAllUsers = async () => {
+             store.dispatch('loader/setLoading', true);
             try {
-                await store.dispatch('attributes/fetchAllAttributes');
-                attributes.value = store.getters['attributes/allAttributes'];
+                await store.dispatch('users/fetchAllUsers');
+                users.value = store.getters['users/allUsers'];
             } catch (error) {
                 console.log(error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
-        const fetchAllShops = async () => {
+        const fetchAllCities = async () => {
+             store.dispatch('loader/setLoading', true);
             try {
-                await store.dispatch('shops/fetchAllShops');
-                shops.value = store.getters['shops/allShops'];
+                await store.dispatch('cities/fetchAllCities');
+                cities.value = store.getters['cities/allCities'];
             } catch (error) {
                 console.log(error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
-        const fetchProperties = async (attributeId, index) => {
-            await store.dispatch('properties/fetchPropertiesByAttribute', attributeId);
-            properties.value[index] = store.state.properties.propertiesByAttribute[attributeId];
+        const fetchSubCategories = async (categoryId, index) => {
+            console.log(categoryId);
+            await store.dispatch('categories/fetchSubCategoriesByCategory', categoryId);
+            subCategories.value[index] = store.state.categories.subCategoriesByCategory[categoryId];
         };
 
-        const addDefaultField = () => {
-            attribute_fields.push({ attribute_id: '', property_id: '' });
+        const fetchNeighborhoods = async (cityId, index) => {
+            await store.dispatch('neighborhoods/fetchNeighborhoodsByCity', cityId);
+            neighborhoods.value[index] = store.state.neighborhoods.neighborhoodsByCity[cityId];
         };
 
-
-        const addField = () => {
-            attribute_fields.push({ attribute_id: '', property_id: '' });
+        const addDefaultFieldCategory = () => {
+            category_fields.push({ category_id: '', subCategory_id: '' });
         };
 
-        const removeField = (index) => {
-            attribute_fields.splice(index, 1);
-        };
-
-        const handleFileUpload = (event) => {
-            const files = Array.from(event.target.files);
-            images.value = files;
+        const addDefaultFieldCity = () => {
+            city_fields.push({ city_id: '', neighborhood_id: '' });
         };
 
 
-        // const fetchProperties = async () => {
-        //     try {
-        //         await store.dispatch('properties/fetchAllProperties');
-        //         properties.value = store.getters['properties/allProperties'];
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        // };
+        const addFieldCategorySubCategory = () => {
+            category_fields.push({ category_id: '', subCategory_id: '' });
+        };
+
+        const addFieldCityNeighborhood = () => {
+            city_fields.push({ city_id: '', neighborhood_id: '' });
+        };
+
+        const removeFieldCategorySubCategory = (index) => {
+            category_fields.splice(index, 1);
+        };
+        const removeFieldCityNeighborhood = (index) => {
+            city_fields.splice(index, 1);
+        };
 
 
 
-        const createNewProduct = async () => {
+        const createNewShop = async () => {
             errors.value = {};
+             store.dispatch('loader/setLoading', true);
             try {
                 const formData = new FormData();
                 formData.append('name', name.value);
-                // formData.append('attribute_id', attribute_id.value);
-                formData.append('price', price.value);
-                // formData.append('property_id', property_id.value);
-                formData.append('quantity', quantity.value);
                 formData.append('description', description.value);
-                formData.append('shop_id', shop_id.value);
-                formData.append('category_id', category_id.value);
-                formData.append('image', image.value);
-                // formData.append('images', images.value);
+                formData.append('user_id', user_id.value);
+                formData.append('profile', profile.value);
+                formData.append('cover', cover.value);
+                formData.append('state', state.value);
 
-                attribute_fields.forEach((field, index) => {
-                    formData.append(`attribute_fields[${index}][attribute_id]`, field.attribute_id);
-                    formData.append(`attribute_fields[${index}][property_id]`, field.property_id);
+                city_fields.forEach((field, index) => {
+                    formData.append(`city_fields[${index}][city_id]`, field.city_id);
+                    formData.append(`city_fields[${index}][neighborhood_id]`, field.neighborhood_id);
                 });
 
-                images.value.forEach((image, index) => {
-                    formData.append(`images[${index}]`, image);
+                category_fields.forEach((field, index) => {
+                    formData.append(`category_fields[${index}][category_id]`, field.category_id);
+                    formData.append(`category_fields[${index}][subCategory_id]`, field.subCategory_id);
                 });
 
-                // console.log(image.value);
-                
-                await store.dispatch('products/createProduct', formData);
+
+                for (let [key, value] of formData.entries()) {
+                    console.log(`${key}: ${value}`);
+                }
+
+                await store.dispatch('shops/createShop', formData);
                 console.log('arrive');
-                name.value = '';
-                // attribute_id.value = '';
-                price.value = '';
-                // property_id.value = '';
-                quantity.value = '';
-                description.value = '';
-                shop_id.value = '';
-                category_id.value
-                image.value = '';
-                images.value = '';
-
 
             } catch (validationErrors) {
                 errors.value = validationErrors;
                 console.log(validationErrors);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
@@ -273,54 +293,67 @@ export default {
             });
         }
 
-        const onFileChange = (e) => {
+        const onFileChangeProfile = (e) => {
             const files = e.target.files;
             if (files.length > 0) {
-                image.value = files[0];
+                profile.value = files[0];
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    imageUrl.value = e.target.result;
+                    imageUrlProfile.value = e.target.result;
                 };
-                reader.readAsDataURL(image.value); // Utilisez image.value plutôt que imageUrl.value
+                reader.readAsDataURL(profile.value); // Utilisez image.value plutôt que imageUrl.value
+            }
+        };
+
+        const onFileChangeCover = (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                cover.value = files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imageUrlCover.value = e.target.result;
+                };
+                reader.readAsDataURL(cover.value); // Utilisez image.value plutôt que imageUrl.value
             }
         };
 
         onMounted(async () => {
-            await fetchAllAtributes();
-            await fetchAllShops();
-            // await fetchProperties();
+            addDefaultFieldCategory();
+            addDefaultFieldCity();
             await fetchAllCategories();
+            await fetchAllUsers();
+            await fetchAllCities();
             await searchSelect();
-            addDefaultField();
         });
 
 
         return {
             name,
-            shop_id,
+            subCategories,
+            neighborhoods,
+            user_id,
+            users,
+            state,
             categories,
-            shops,
-            price,
-            quantity,
+            cities,
             description,
-            category_id,
-            // attribute_id,
-            properties,
-            // property_id,
-            category_id,
             errors,
-            createNewProduct,
-            attributes,
-            image,
-            imageUrl,
-            onFileChange,
-            attribute_fields,
-            fetchProperties,
-            addField,
-            removeField,
-            handleFileUpload,
-            fetchAllShops,
-
+            createNewShop,
+            cover,
+            profile,
+            imageUrlProfile,
+            imageUrlCover,
+            onFileChangeProfile,
+            onFileChangeCover,
+            category_fields,
+            city_fields,
+            fetchSubCategories,
+            fetchNeighborhoods,
+            addFieldCityNeighborhood,
+            addFieldCategorySubCategory,
+            removeFieldCategorySubCategory,
+            removeFieldCityNeighborhood,
+            fetchAllCities,
         };
     }
 };

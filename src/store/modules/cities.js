@@ -68,7 +68,6 @@ const actions = {
   async fetchAllCities({ commit }) {
     try {
       const response = await citiesService.fetchAllCities();
-      console.log(response.data);
       commit('setAllCities', response.data);
     } catch (error) {
       console.log(error);

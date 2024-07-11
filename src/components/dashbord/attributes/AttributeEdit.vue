@@ -2,9 +2,10 @@
 
     <main>
         <PageHeader>
-            <template #title>Attributes</template>
-            <template #subtitle>Edit An Attributes</template>
+            <template #title>Les Attributes</template>
+            <template #subtitle>Modifier un attributes</template>
         </PageHeader>
+        <Loader></Loader>
         <!-- Main page content-->
         <div class="container-xl px-4 mt-n10">
 
@@ -12,14 +13,14 @@
 
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between">
-                    <p>Attributes Management</p>
-                    <RouterLink to='/dashboard/attributes' class="btn btn-primary btn-sm">All attributes</RouterLink>
+                    <p>Gerer les attributes</p>
+                    <RouterLink to='/dashboard/attributes' class="btn btn-primary btn-sm">Les attributes</RouterLink>
                 </div>
                 <div class="card-body">
                     <form @submit.prevent="updateExistingAttribute">
                         <!-- Form Group (username)-->
                         <div class="mb-3">
-                            <label class="small mb-1" for="name"><b>Attribute Name</b></label>
+                            <label class="small mb-1" for="name"><b>Nom</b></label>
                             <input type="text" class="form-control" v-model="name" id="name" required
                                 placeholder="Enter Attribute Name">
                             <span v-if="errors.name" class="text-danger m-1">{{ errors.name[0] }}</span>
@@ -39,11 +40,13 @@ import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
 import PageHeader from '@/components/dashbord/dashboardSlots/PageHeader.vue';
+import Loader from '@/components/dashbord/loader/Loader.vue';
 
 export default {
     components: {
-    PageHeader
-  },
+        PageHeader,
+        Loader
+    },
     setup() {
         const store = useStore();
         const route = useRoute();
@@ -61,9 +64,10 @@ export default {
             }
         };
 
-       
+
         const updateExistingAttribute = async () => {
             errors.value = {};
+            store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('attributes/updateAttribute', { id: Number(route.params.id), name: name.value });
                 const currentPage = store.state.attributes.currentPage; // Utilisez la pagination actuelle dans la redirection
@@ -71,6 +75,8 @@ export default {
             } catch (validationErrors) {
                 errors.value = validationErrors;
                 console.log(validationErrors);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 

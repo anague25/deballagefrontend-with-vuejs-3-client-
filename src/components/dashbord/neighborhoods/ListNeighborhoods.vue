@@ -1,19 +1,20 @@
 <template>
     <main>
         <PageHeader>
-            <template #title>Neighborhoods</template>
-            <template #subtitle>The List Of Neighborhoods</template>
+            <template #title>Quartier</template>
+            <template #subtitle>Listes des quarties</template>
         </PageHeader>
+        <Loader></Loader>
         <!-- Main page content-->
         <div class="container-xl px-4 mt-n10">
             <!-- Example DataTable for Dashboard Demo-->
             <div class="card mb-4">
-                <div class="card-header">Neighborhoods Management</div>
+                <div class="card-header">Gerer les quarties</div>
                 <div class="card-body">
                     <div class="dataTable-wrapper no-footer fixed-columns">
                         <div class="dataTable-top">
-                            <router-link class="btn btn-primary btn-sm" to="/dashboard/neighborhoods/create">Create New
-                                Neighborhood</router-link>
+                            <router-link class="btn btn-primary btn-sm" to="/dashboard/neighborhoods/create">Creer un
+                                quartier</router-link>
                             <div class="dataTable-search">
                                 <input class="dataTable-input" placeholder="Search..." v-model="searchInput"
                                     type="search">
@@ -23,8 +24,8 @@
                             <table class="dataTable-table">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>City</th>
+                                        <th>Nom</th>
+                                        <th>Ville</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -48,7 +49,7 @@
                                                 </svg>
                                             </button>
                                             <router-link :to="'/dashboard/neighborhoods/edit/' + neighborhood.id"
-                                                class="btn btn-primary btn-sm m-1">Edit</router-link>
+                                                class="btn btn-primary btn-sm m-1">Modifier</router-link>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -76,12 +77,14 @@ import { useRoute, useRouter } from 'vue-router';
 import Notification from '@/plugins/Notification';
 import PageHeader from '@/components/dashbord/dashboardSlots/PageHeader.vue';
 import Pagination from '@/components/dashbord/dashboardSlots/Pagination.vue';
+import Loader from '@/components/dashbord/loader/Loader.vue';
 
 
 export default {
     components: {
         PageHeader,
-        Pagination
+        Pagination,
+        Loader
     },
     setup() {
         const store = useStore();
@@ -90,11 +93,14 @@ export default {
         const searchInput = ref('');
 
         const fetchNeighborhoods = async (page = 1) => {
+            store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('neighborhoods/fetchNeighborhoods', { page: page, search: searchInput.value });
                 updateURLWithCurrentPage(page);
             } catch (error) {
                 console.error('Failed to fetch Neighborhoods:', error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
