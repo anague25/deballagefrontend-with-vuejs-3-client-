@@ -53,6 +53,7 @@ export default {
 
         const createNewAttribute = async () => {
             errors.value = {};
+            console.log('Setting loader to true');
             store.dispatch('loader/setLoading', true);
 
             try {
@@ -60,8 +61,10 @@ export default {
                 name.value = '';
             } catch (validationErrors) {
                 errors.value = validationErrors;
-            }finally{
+            } finally {
                 store.dispatch('loader/setLoading', false);
+                console.log('Setting loader to false');
+
             }
         };
 

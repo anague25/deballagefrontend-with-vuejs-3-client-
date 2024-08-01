@@ -68,6 +68,7 @@ const actions = {
       commit('REMOVE_ADMIN_TOKEN'); // Mutation pour supprimer le jeton du store
       commit('REMOVE_AUTH_USER'); // Mutation pour supprimer le jeton du store
     } catch (error) {
+      localStorage.removeItem('admin_token');
       console.error('Error logging out:', error);
     }
   },

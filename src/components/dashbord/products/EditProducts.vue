@@ -55,7 +55,7 @@
                                 <option value="">None</option>
                                 <option v-for="category in categories" :key="category.id" :value="category.id">{{
                                     category.name
-                                }}</option>
+                                    }}</option>
                             </select>
                             <span v-if="errors.category_id" class="text-danger m-1">{{ errors.category_id[0] }}</span>
                         </div>
@@ -68,7 +68,7 @@
                                 <option value="">None</option>
                                 <option v-for="shop in shops" :key="shop.id" :value="shop.id">{{
                                     shop.name
-                                }}</option>
+                                    }}</option>
                             </select>
                             <span v-if="errors.shop_id" class="text-danger m-1">{{ errors.shop_id[0] }}</span>
                         </div>
@@ -245,41 +245,44 @@ export default {
                 router.push({ path: '/dashboard/products', query: { success: true, page: currentPage } });
             } catch (validationErrors) {
                 errors.value = validationErrors;
-            }finally{
+            } finally {
                 store.dispatch('loader/setLoading', false);
             }
         };
 
         const fetchAllCategories = async () => {
-             store.dispatch('loader/setLoading', true);
+            store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('categories/fetchAllCategories');
                 categories.value = store.getters['categories/allCategories'];
             } catch (error) {
                 console.log(error);
+            } finally {
+                store.dispatch('loader/setLoading', false);
+
             }
         };
 
         const fetchAllAtributes = async () => {
-             store.dispatch('loader/setLoading', true);
+            store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('attributes/fetchAllAttributes');
                 attributes.value = store.getters['attributes/allAttributes'];
             } catch (error) {
                 console.log(error);
-            }finally{
+            } finally {
                 store.dispatch('loader/setLoading', false);
             }
         };
 
         const fetchAllShops = async () => {
-             store.dispatch('loader/setLoading', true);
+            store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('shops/fetchAllShops');
                 shops.value = store.getters['shops/allShops'];
             } catch (error) {
                 console.log(error);
-            }finally{
+            } finally {
                 store.dispatch('loader/setLoading', false);
             }
         };
