@@ -57,6 +57,6 @@ PopupDelete(){
 
 }
 
-export default Message = new Message();
+export default new Message();
 
 

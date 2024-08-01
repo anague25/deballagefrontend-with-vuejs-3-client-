@@ -1,19 +1,20 @@
 <template>
     <main>
         <PageHeader>
-            <template #title>Products</template>
-            <template #subtitle>The List Of Products</template>
+            <template #title>Boutiques</template>
+            <template #subtitle>Listes des boutiques</template>
         </PageHeader>
+        <Loader></Loader>
         <!-- Main page content-->
         <div class="container-xl px-4 mt-n10">
             <!-- Example DataTable for Dashboard Demo-->
             <div class="card mb-4">
-                <div class="card-header">Products Management</div>
+                <div class="card-header">Gerer les boutiques</div>
                 <div class="card-body">
                     <div class="dataTable-wrapper no-footer fixed-columns">
                         <div class="dataTable-top">
-                            <router-link class="btn btn-primary btn-sm" to="/dashboard/products/create">Create New
-                                Products</router-link>
+                            <router-link class="btn btn-primary btn-sm" to="/dashboard/shops/create">Creer une
+                                boutique</router-link>
                             <div class="dataTable-search">
                                 <input class="dataTable-input" placeholder="Search..." v-model="searchInput"
                                     type="search">
@@ -23,30 +24,29 @@
                             <table class="dataTable-table">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
+                                        <th>Nom</th>
                                         <th>Description</th>
-                                        <th>Shop</th>
-                                        <th>Category</th>
-                                        <th>Image</th>
+                                        <th>Utilisateur</th>
+                                        <th>Etat</th>
+                                        <th>Couverture</th>
+                                        <th>Profile</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="product in filterProducts" :key="product.id">
-                                        <td>{{ product.name }}</td>
-                                        <td>{{ product.price }}</td>
-                                        <td>{{ product.quantity }}</td>
-                                        <td>{{ product.description }}</td>
-                                        <td>{{ product.shop?.name }}</td>
-                                        <td>{{ product.category?.name }}</td>
+                                    <tr v-for="shop in filterShops" :key="shop.id">
+                                        <td>{{ shop.name }}</td>
+                                        <td>{{ shop.description }}</td>
+                                        <td>{{ shop.user?.firstName }}</td>
+                                        <td>{{ shop.state }}</td>
                                         <td>
-                                            <img :src="path + product.image" alt="product Image" width="50"
-                                                height="50">
+                                            <img :src="path + shop.cover" alt="shop cover" width="50" height="50">
                                         </td>
                                         <td>
-                                            <button @click="confirmDelete(product.id)"
+                                            <img :src="path + shop.profile" alt="shop profile" width="50" height="50">
+                                        </td>
+                                        <td>
+                                            <button @click="confirmDelete(shop.id)"
                                                 class="btn btn-datatable m-1 btn-icon btn-transparent-dark">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -60,8 +60,8 @@
                                                     <line x1="14" y1="11" x2="14" y2="17"></line>
                                                 </svg>
                                             </button>
-                                            <router-link :to="'/dashboard/products/edit/' + product.id"
-                                                class="btn btn-primary btn-sm m-1">Edit</router-link>
+                                            <router-link :to="'/dashboard/shops/edit/' + shop.id"
+                                                class="btn btn-primary btn-sm m-1">Modifier</router-link>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -89,12 +89,14 @@ import { useRoute, useRouter } from 'vue-router';
 import Notification from '@/plugins/Notification';
 import PageHeader from '@/components/dashbord/dashboardSlots/PageHeader.vue';
 import Pagination from '@/components/dashbord/dashboardSlots/Pagination.vue';
+import Loader from '@/components/dashbord/loader/Loader.vue';
 
 
 export default {
     components: {
         PageHeader,
-        Pagination
+        Pagination,
+        Loader
     },
     setup() {
         const store = useStore();
@@ -103,22 +105,28 @@ export default {
         const searchInput = ref('');
         const path = store.getters['getImagePaths/getPath'];
 
-        const fetchProducts = async (page = 1) => {
+        const fetchShops = async (page = 1) => {
+            store.dispatch('loader/setLoading', true);
             try {
-                await store.dispatch('products/fetchProducts', { page: page, search: searchInput.value });
+                await store.dispatch('shops/fetchShops', { page: page, search: searchInput.value });
                 updateURLWithCurrentPage(page);
+                console.log(shops.value);
             } catch (error) {
-                console.error('Failed to fetch products:', error);
+                console.error('Failed to fetch shops:', error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
+
+
 
         const fetchPage = (page) => {
             if (page > 0 && page <= totalPages.value) {
-                fetchProducts(page);
+                fetchShops(page);
             }
         };
 
-        const confirmDelete = (productId) => {
+        const confirmDelete = (shopId) => {
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -128,30 +136,28 @@ export default {
             }).then((result) => {
                 if (result.isConfirmed) {
                     // console.log(neighborhoodId)
-                    store.dispatch('products/deleteProduct', productId);
-                    fetchProperties();
+                    store.dispatch('shops/deleteShop', shopId);
+                    fetchShops();
                 }
             });
         };
 
-        const { products, totalPages, currentPage, elementsPerPage, totalElements } = toRefs(store.state.products);
-       
+        const { shops, totalPages, currentPage, elementsPerPage, totalElements } = toRefs(store.state.shops);
 
-        const filterProducts = computed(() => {
+        const filterShops = computed(() => {
             const searchQuery = searchInput.value.toLowerCase().trim();
 
             if (!searchQuery) {
-                return products.value;
+                return shops.value;
             }
 
-            return products.value.filter(product => {
-                return product.name && product.name.toLowerCase().includes(searchQuery);
+            return shops.value.filter(shop => {
+                return shop.name && shop.name.toLowerCase().includes(searchQuery);
             });
         });
 
         watch(searchInput, (newValue, oldValue) => {
-            fetchProducts();
-            console.log(products.value);
+            fetchShops();
         });
 
 
@@ -160,10 +166,10 @@ export default {
 
         onMounted(async () => {
             const currentPage = route.query.page || 1;
-            await fetchProducts(currentPage);
+            await fetchShops(currentPage);
 
             if (route.query.success === 'true') {
-                Notification.success('Products updated successfully');
+                Notification.success('Shops updated successfully');
                 setTimeout(() => {
                     const { success, ...query } = route.query;
                     router.replace({ query });
@@ -177,12 +183,12 @@ export default {
         };
 
         return {
-            products,
+            shops,
             confirmDelete,
-            fetchProducts,
+            fetchShops,
             fetchPage,
             searchInput,
-            filterProducts,
+            filterShops,
             totalPages,
             currentPage,
             elementsPerPage,

@@ -1,12 +1,11 @@
 <template>
-    <h1>pppppppp</h1>
+  <h1 class="text-danger text-center">DEBALLAGE MANAGEMENT : PLEASE GO TO <router-link to="/dashboard" class="text-danger">THE DASHBOARD</router-link></h1>
 </template>
 
 <script>
 
-export default {
-    name: 'UserLayout',
 
-
-}
 </script>
+
+
+<style></style>

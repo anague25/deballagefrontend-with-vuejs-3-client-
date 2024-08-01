@@ -70,8 +70,6 @@ const actions = {
       commit('setAllAttributes', response.data);
     } catch (error) {
       console.log(error);
-
-      toast.error('Failed to fetch all Attributes');
     }
   },
   async createAttribute({ commit }, attribute) {

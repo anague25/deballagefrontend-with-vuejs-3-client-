@@ -8,6 +8,9 @@ import products from './modules/products'; // Assurez-vous que le chemin est cor
 import ProductsImages from './modules/ProductsImages'; // Assurez-vous que le chemin est correct
 import shops from './modules/shops'; // Assurez-vous que le chemin est correct
 import getImagePaths from './modules/getImagePaths'; // Assurez-vous que le chemin est correct
+import users from './modules/users'; // Assurez-vous que le chemin est correct
+import auth from './modules/auth'; // Assurez-vous que le chemin est correct
+import loader from './modules/loader';
 
 const store = createStore({
   modules: {
@@ -18,10 +21,14 @@ const store = createStore({
     properties, // Utilisez un nom clé pour le module
     products, // Utilisez un nom clé pour le module
     ProductsImages, // Utilisez un nom clé pour le module
-    shops, // Utilisez un nom clé pour le module
     getImagePaths, // Utilisez un nom clé pour le module
+    shops, // Utilisez un nom clé pour le module
+    users, // Utilisez un nom clé pour le module
+    auth, // Utilisez un nom clé pour le module
+    loader, // Utilisez un nom clé pour le module
   
   }
 });
 
 export default store;
+

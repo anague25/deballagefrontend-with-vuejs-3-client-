@@ -31,15 +31,15 @@ const mutations = {
     state.totalElements = meta.total;
     state.elementsPerPage = meta.per_page; // Récupération dynamique
   },
-  setAllShops(state,{data}){
+  setAllShops(state, { data }) {
     state.allShops = data;
   },
- 
-    setCurrentPageBeforeUpdate(state, page) {
-      state.currentPageBeforeUpdate = page;
-    },
-  
-  
+
+  setCurrentPageBeforeUpdate(state, page) {
+    state.currentPageBeforeUpdate = page;
+  },
+
+
   addShop(state, shop) {
     state.shops.push(shop);
   },
@@ -55,9 +55,9 @@ const mutations = {
 };
 
 const actions = {
-  async fetchShops({ commit }, {page = 1,search}) {
+  async fetchShops({ commit }, { page = 1, search }) {
     try {
-      const response = await shopsService.fetchShops(page,search);
+      const response = await shopsService.fetchShops(page, search);
       commit('setShops', { data: response.data.data, meta: response.data.meta });
     } catch (error) {
       toast.error('Failed to fetch attributes');
@@ -82,7 +82,7 @@ const actions = {
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         throw error.response.data.errors;
-      }else{
+      } else {
         console.log(error);
       }
     }
@@ -90,28 +90,27 @@ const actions = {
 
   async updateShop({ commit, dispatch, state }, shop) {
     try {
-        const response = await shopsService.updateShop(shop);
-        commit('updateShop', response.data);
-        // console.log('kkkkkkkkkkkkkkkkkkkkkkkkkk');
+      const response = await shopsService.updateShop(shop);
+      commit('updateShop', response.data);
 
-        // Mettre à jour la liste des attributs pour refléter les changements
-        await dispatch('fetchShops', { page: state.currentPage, search: '' });
-        return response.data; // Retourne les données mises à jour
+      // Mettre à jour la liste des attributs pour refléter les changements
+      await dispatch('fetchShops', { page: state.currentPage, search: '' });
+      return response.data; // Retourne les données mises à jour
     } catch (error) {
       console.log(error);
-        if (error.response && error.response.data && error.response.data.errors) {
-            throw error.response.data.errors;
-        }
+      if (error.response && error.response.data && error.response.data.errors) {
+        throw error.response.data.errors;
+      }
     }
-}
-,
+  }
+  ,
   async deleteShop({ commit }, shop) {
     try {
       await shopsService.deleteShop(shop);
       commit('deleteShop', shop);
       toast.success('Shops deleted successfully');
     } catch (error) {
-     console.log(error);
+      console.log(error);
     }
   }
 };

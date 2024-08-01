@@ -2,18 +2,19 @@
     <main>
         <PageHeader>
             <template #title>Categories</template>
-            <template #subtitle>The List Of Categories</template>
+            <template #subtitle>Listes des Categories</template>
         </PageHeader>
+        <Loader></Loader>
         <!-- Main page content-->
         <div class="container-xl px-4 mt-n10">
             <!-- Example DataTable for Dashboard Demo-->
             <div class="card mb-4">
-                <div class="card-header">Categories Management</div>
+                <div class="card-header">Gerer les Categories</div>
                 <div class="card-body">
                     <div class="dataTable-wrapper no-footer fixed-columns">
                         <div class="dataTable-top">
-                            <router-link class="btn btn-primary btn-sm" to="/dashboard/categories/create">Create New
-                                Category</router-link>
+                            <router-link class="btn btn-primary btn-sm" to="/dashboard/categories/create">Creer une
+                                categorie</router-link>
                             <div class="dataTable-search">
                                 <input class="dataTable-input" placeholder="Search..." v-model="searchInput"
                                     type="search">
@@ -23,7 +24,7 @@
                             <table class="dataTable-table">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
+                                        <th>Nom</th>
                                         <th>Description</th>
                                         <th>Image</th>
                                         <th>Action</th>
@@ -53,7 +54,7 @@
                                                 </svg>
                                             </button>
                                             <router-link :to="'/dashboard/categories/edit/' + category.id"
-                                                class="btn btn-primary btn-sm m-1">Edit</router-link>
+                                                class="btn btn-primary btn-sm m-1">Modifier</router-link>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -81,26 +82,31 @@ import { useRoute, useRouter } from 'vue-router';
 import Notification from '@/plugins/Notification';
 import PageHeader from '@/components/dashbord/dashboardSlots/PageHeader.vue';
 import Pagination from '@/components/dashbord/dashboardSlots/Pagination.vue';
+import Loader from '@/components/dashbord/loader/Loader.vue';
 
 
 export default {
     components: {
         PageHeader,
-        Pagination
+        Pagination,
+        Loader
     },
     setup() {
         const store = useStore();
         const route = useRoute();
         const router = useRouter();
         const searchInput = ref('');
-        const path = store.getters['categories/getPath'];
+        const path = store.getters['getImagePaths/getPath'];
 
         const fetchCategories = async (page = 1) => {
+            store.dispatch('loader/setLoading', true);
             try {
                 await store.dispatch('categories/fetchCategories', { page: page, search: searchInput.value });
                 updateURLWithCurrentPage(page);
             } catch (error) {
                 console.error('Failed to fetch Categories:', error);
+            }finally{
+                store.dispatch('loader/setLoading', false);
             }
         };
 
@@ -120,6 +126,7 @@ export default {
             }).then((result) => {
                 if (result.isConfirmed) {
                     store.dispatch('categories/deleteCategory', categoryId);
+                    fetchCategories();
                 }
             });
         };

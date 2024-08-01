@@ -51,4 +51,4 @@ class Notifications {
 
 }
 
-export default Notification = new Notifications();
+export default new Notifications();

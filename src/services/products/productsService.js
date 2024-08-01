@@ -15,17 +15,18 @@ export default {
     return axios.get(`${API_URL}/all`);
   },
   createProduct(product) {
+    // console.log(product.get('image'));
     return axios.post(API_URL, product);
   },
 
-  updateProduct(property) {
-    const id = property.get('id');
-    return axios.post(`${API_URL}/${id}`, property);
+  updateProduct(product) {
+    const id = product.get('id');
+    return axios.post(`${API_URL}/${id}`, product);
   },
 
 
-  deleteProduct(propertyId) {
-    return axios.delete(`${API_URL}/${propertyId}`);
+  deleteProduct(productId) {
+    return axios.delete(`${API_URL}/${productId}`);
   },
 
 };

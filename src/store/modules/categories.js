@@ -1,8 +1,10 @@
 import toast from '@/plugins/Notification';
 import categoriesService from '@/services/categories/categoriesService';
+import citiesService from '@/services/cities/citiesService';
 
 const state = {
   categories: [],
+  subCategoriesByCategory: {},
   allCategories: [],
   currentPage: 1,
   totalPages: 0,
@@ -14,6 +16,7 @@ const state = {
 };
 
 const getters = {
+  subCategoriesByCategory: (state) => state.subCategoriesByCategory,
   categories: (state) => state.categories,
   allCategories: (state) => state.allCategories,
   categoryById: (state) => (id) => state.categories.find(attr => attr.id === id),
@@ -25,6 +28,13 @@ const getters = {
 };
 
 const mutations = {
+  setSubCategoriesByCategory(state, { categoryId, subCategories }) {
+    state.subCategoriesByCategory = {
+      ...state.subCategoriesByCategory,
+      [categoryId]: subCategories,
+    };
+  },
+
   setCategories(state, { data, meta }) {
     state.categories = data;
     state.currentPage = meta.current_page;
@@ -56,6 +66,17 @@ const mutations = {
 };
 
 const actions = {
+  async fetchSubCategoriesByCategory({ commit }, categoryId) {
+    try {
+      const response = await categoriesService.fetchSubCategoriesByCategory(categoryId);
+      console.log(response);
+      commit('setSubCategoriesByCategory', { categoryId, subCategories: response.data.data.children });
+    } catch (error) {
+      console.error(error);
+    }
+  },
+
+
   async fetchCategories({ commit }, {page = 1,search}) {
     try {
       const response = await categoriesService.fetchCategories(page,search);
@@ -68,7 +89,6 @@ const actions = {
   async fetchAllCategories({ commit }) {
     try {
       const response = await categoriesService.fetchAllCategories();
-      console.log(response.data);
       commit('setAllCategories', response.data);
     } catch (error) {
       console.log(error);
